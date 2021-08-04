@@ -1,0 +1,54 @@
+const express = require('express')
+const app = express()
+const cors = require('cors')
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+//envvariables
+let dotEnv = require('dotenv')
+dotEnv.config()
+
+//allow all origin
+app.use(cors())
+
+
+//mongoose setup
+const mongoose = require('mongoose')
+let MONGODB = process.env.MONGODB
+mongoose.connect(MONGODB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+})
+
+//routes
+const postsRoute = require('./routes/post-route')
+const userRoute = require('./routes/user-route')
+const commentRoute = require('./routes/comment-route')
+const authRoute = require('./routes/auth-route')
+
+//middlewares
+app.use('/api/post', postsRoute)
+app.use('/api/user', userRoute)
+app.use('/api/comment', commentRoute)
+app.use('/api/auth', authRoute)
+
+//home page
+app.get('/', (req, res) => {
+    res.json({
+        success: "Connected"
+    })
+})
+
+// app.get('*', (req, res) => {
+//     res.status(404).json({
+//         err: "No Route"
+//     })
+// })
+
+
+const PORT = process.env.PORT || 5000
+app.listen(PORT, () => {
+    console.log(`Listning on ${PORT}`);
+})
