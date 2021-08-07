@@ -1,12 +1,11 @@
-const express = require('express')
-const router = express.Router()
-const userController = require('../controller/user-controller')
-const authController = require('../controller/auth-controller')
+const express = require("express");
 
-//get user
-router.get('/:name', userController.getUser)
-//get current user
-router.get('/', authController.isAuth, userController.getCurrentUser)
+const authController = require("../controller/auth-controller");
+const userController = require("../controller/user-controller");
+const router = express.Router();
 
+router.get("/:name", userController.getUser);
 
-module.exports = router
+router.get("/", authController.isAuth, userController.getCurrentUser);
+
+module.exports = router;

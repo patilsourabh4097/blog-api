@@ -1,9 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 let comment = new mongoose.Schema({
-    desc: String,
-    date: { type: Date, default: Date.now },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }
-})
+  desc: String,
+  date: { type: Date, default: Date.now },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+});
 
-module.exports = mongoose.model('comment', comment)
+module.exports = mongoose.model("comment", comment);

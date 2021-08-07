@@ -1,18 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const postsController = require('../controller/posts-controller')
-const authController = require('../controller/auth-controller')
+const express = require("express");
 
-// get posts on page number
-router.get('/page/:page', postsController.getPost)
+const authController = require("../controller/auth-controller");
+const postsController = require("../controller/posts-controller");
+const router = express.Router();
 
-//add post
-router.post('/', authController.isAuth, postsController.addPost)
+router.get("/page/:page", postsController.getPost);
 
-//get single post
-router.get('/:id', postsController.getSinglePost)
+router.post("/", authController.isAuth, postsController.addPost);
 
-//get posts related to perticular usee
-router.get('/user/:id', postsController.getUserPost)
+router.get("/:id", postsController.getSinglePost);
 
-module.exports = router
+router.get("/user/:id", postsController.getUserPost);
+
+module.exports = router;
