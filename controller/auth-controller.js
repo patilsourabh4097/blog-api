@@ -3,11 +3,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 exports.login = async (req, res) => {
-  let name = req.body.name;
-  let pass = req.body.pass;
+  const {name, pass} = req.body
   const key = process.env.JWT_SECRET;
 
-  let tempUser = await User.findOne({ userName: name });
+  const tempUser = await User.findOne({ userName: name });
 
   if (!tempUser) {
     res.json({
@@ -16,14 +15,14 @@ exports.login = async (req, res) => {
     return;
   }
 
-  let isAuth = await bcrypt.compare(pass, tempUser.password);
+  const isAuth = await bcrypt.compare(pass, tempUser.password);
   if (isAuth) {
-    let payLoad = {
+    const payLoad = {
       name: tempUser.userName,
       password: tempUser.password,
     };
 
-    let token = await jwt.sign(payLoad, key);
+    const token = await jwt.sign(payLoad, key);
 
     res.json({
       success: "logged in",
@@ -37,10 +36,9 @@ exports.login = async (req, res) => {
 };
 
 exports.signUp = async (req, res) => {
-  const name = req.body.name;
-  const pass = req.body.pass;
+  const {name, pass} = req.body
 
-  let tempUser = await User.findOne({ userName: name });
+  const tempUser = await User.findOne({ userName: name });
   if (tempUser) {
     res.json({
       err: "User already exists",
@@ -48,11 +46,11 @@ exports.signUp = async (req, res) => {
     return;
   }
 
-  pass = await bcrypt.hash(pass, 10);
+  hashedPassword = await bcrypt.hash(pass, 10);
 
   let newUser = new User({
     userName: name,
-    password: pass,
+    password: hashedPassword,
   });
 
   await newUser.save((err) => {
@@ -88,7 +86,7 @@ exports.isAuth = (req, res, next) => {
       return;
     }
 
-    let tempUser = await User.findOne({ userName: decoded.name });
+    const tempUser = await User.findOne({ userName: decoded.name });
 
     if (!tempUser) {
       res.json({

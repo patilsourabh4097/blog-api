@@ -3,22 +3,25 @@ const Posts = require("../models/Posts");
 const validation = require("./validation");
 
 exports.addComment = async (req, res) => {
-  const id = req.params.postId;
-  const isValid = validation.isValidObjectId(id);
+  const postId = req.params.postId;
+  const isValid = validation.isValidObjectId(postId);
   if (!isValid) {
     res.json({
       err: "Invalid Id",
     });
     return;
   }
+  const description = req.body.desc;
+  const userId = req.user._id;
   let newComment = new Comment({
-    desc: req.body.desc,
-    user: req.user._id,
+    desc: description,
+    user: userId,
+    post: postId
   });
 
   newComment = await newComment.save();
 
-  let currPost = await Posts.findByIdAndUpdate(id, {
+  const currPost = await Posts.findByIdAndUpdate(postId, {
     $push: { comments: newComment._id },
   });
 

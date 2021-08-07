@@ -1,11 +1,13 @@
 const User = require("../models/User");
 
 exports.getCurrentUser = async (req, res) => {
+  const username = req.user.userName
+  const userId = req.user._id
   let currUser = {
     success: "Success",
     data: {
-      username: req.user.userName,
-      id: req.user._id,
+      username: username,
+      id: userId,
     }
   };
   res.json(currUser);
@@ -13,7 +15,7 @@ exports.getCurrentUser = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   const name = req.params.name;
-  let currUser = await User.findOne({ userName: name });
+  const currUser = await User.findOne({ userName: name });
 
   if (!currUser) {
     res.json({

@@ -4,18 +4,20 @@ const User = require("../models/User");
 const validation = require("./validation");
 
 exports.addPost = async (req, res) => {
+  const {title, desc} = req.body
+  const userId = req.user._id
   let newPost = new Posts({
-    title: req.body.title,
-    desc: req.body.desc,
-    userid: req.user._id,
+    title: title,
+    desc: desc,
+    userId: userId,
   });
 
   let post = await newPost.save();
-  post = post._id;
+  postId = post._id;
 
-  let currUser = await User.findOneAndUpdate(
-    { _id: req.user._id },
-    { $push: { posts: post } }
+  const currUser = await User.findOneAndUpdate(
+    { _id: userId },
+    { $push: { posts: postId } }
   );
   res.json({
     success: "Post Added",
@@ -23,7 +25,8 @@ exports.addPost = async (req, res) => {
 };
 
 exports.getUserPost = async (req, res) => {
-  const currUser = await User.findOne({ userName: req.params.id }).populate(
+  const name = req.params.id
+  const currUser = await User.findOne({ userName: name }).populate(
     "posts"
   );
   if (!currUser) {
@@ -43,7 +46,7 @@ exports.getUserPost = async (req, res) => {
 };
 
 exports.getPost = async (req, res) => {
-  let page = req.params.page;
+  const page = req.params.page;
 
   if (isNaN(page)) {
     res.json({
@@ -53,7 +56,7 @@ exports.getPost = async (req, res) => {
   }
   page = parseInt(page);
 
-  let currPosts = await Posts.find()
+  const currPosts = await Posts.find()
     .sort({ date: -1 })
     .limit(10)
     .skip(10 * page)
@@ -67,7 +70,7 @@ exports.getPost = async (req, res) => {
 exports.getSinglePost = async (req, res) => {
   const id = req.params.id;
 
-  let isValid = validation.isValidObjectId(id);
+  const isValid = validation.isValidObjectId(id);
   if (!isValid) {
     res.json({
       err: "Invalid id",
