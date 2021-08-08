@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoute);
-app.use("/api/comment", commentRoute);
+app.use("/api/post", commentRoute);
 app.use("/api/post", postsRoute);
 app.use("/api/user", userRoute);
 

@@ -1,32 +1,32 @@
-const User = require("../models/User");
+const User = require("../models/user");
 
 exports.getCurrentUser = async (req, res) => {
-  const username = req.user.userName
-  const userId = req.user._id
-  let currUser = {
+  const { userName } = req.user;
+  const userId = req.user._id;
+  let user = {
     success: "Success",
     data: {
-      username: username,
+      username: userName,
       id: userId,
-    }
+    },
   };
-  res.json(currUser);
+  res.json(user);
 };
 
 exports.getUser = async (req, res) => {
-  const name = req.params.name;
-  const currUser = await User.findOne({ userName: name });
+  const { name } = req.params;
+  const user = await User.findOne({ userName: name });
 
-  if (!currUser) {
+  if (!user) {
     res.json({
       err: "user dosent exist",
     });
     return;
   }
 
-  const resUser = {
-    username: currUser.userName,
-    posts: currUser.posts,
+  const result = {
+    username: user.userName,
+    posts: user.posts,
   };
-  res.json(resUser);
+  res.json(result);
 };

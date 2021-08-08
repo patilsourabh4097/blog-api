@@ -1,21 +1,22 @@
-const comment = require("../models/Comment");
-const Posts = require("../models/Posts");
-const User = require("../models/User");
+const Comment = require("../models/comment");
+const Posts = require("../models/posts");
+const User = require("../models/user");
+
 const validation = require("./validation");
 
 exports.addPost = async (req, res) => {
-  const {title, desc} = req.body
-  const userId = req.user._id
+  const { title, description } = req.body;
+  const userId = req.user._id;
   let newPost = new Posts({
-    title: title,
-    desc: desc,
-    userId: userId,
+    title,
+    description,
+    userId,
   });
 
   let post = await newPost.save();
   postId = post._id;
 
-  const currUser = await User.findOneAndUpdate(
+  const user = await User.findOneAndUpdate(
     { _id: userId },
     { $push: { posts: postId } }
   );
@@ -25,52 +26,28 @@ exports.addPost = async (req, res) => {
 };
 
 exports.getUserPost = async (req, res) => {
-  const name = req.params.id
-  const currUser = await User.findOne({ userName: name }).populate(
-    "posts"
-  );
-  if (!currUser) {
+  const { name } = req.params;
+  const user = await User.findOne({ userName: name }).populate("posts");
+  if (!user) {
     res.json({
       err: "User dosent exist",
     });
     return;
   }
-  if (currUser.posts.length === 0) {
+  if (user.posts.length === 0) {
     res.json({ msg: "this user has made no posts" });
     return;
   }
   res.json({
     success: "Success",
-    data: currUser.posts,
-  });
-};
-
-exports.getPost = async (req, res) => {
-  const page = req.params.page;
-
-  if (isNaN(page)) {
-    res.json({
-      err: "Not a page no",
-    });
-    return;
-  }
-  page = parseInt(page);
-
-  const currPosts = await Posts.find()
-    .sort({ date: -1 })
-    .limit(10)
-    .skip(10 * page)
-    .populate("userid", "userName");
-  res.json({
-    success: "Success",
-    data: currPosts,
+    data: user.posts,
   });
 };
 
 exports.getSinglePost = async (req, res) => {
-  const id = req.params.id;
+  const { postId } = req.params;
 
-  const isValid = validation.isValidObjectId(id);
+  const isValid = validation.isValidObjectId(postId);
   if (!isValid) {
     res.json({
       err: "Invalid id",
@@ -78,18 +55,18 @@ exports.getSinglePost = async (req, res) => {
     return;
   }
 
-  let currPost = Posts.findById(id).populate("userid", "userName");
-  currPost.populate({
-    path: "comments",
+  let post = Posts.findById(postId).populate("userid", "userName");
+  post.populate({
+    path: "Comments",
     populate: {
-      path: "user",
+      path: "User",
       select: "userName",
     },
   });
-  currPost = await currPost;
+  post = await post;
 
   res.json({
     success: "Success",
-    data: currPost,
+    data: post,
   });
 };
