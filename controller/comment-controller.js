@@ -1,5 +1,6 @@
 const Comment = require("../models/comment");
 const Post = require("../models/post");
+
 const validation = require("../validators/validation");
 
 exports.addComment = async (req, res) => {
@@ -30,3 +31,18 @@ exports.addComment = async (req, res) => {
     success: "Comment added",
   });
 };
+
+exports.getAllComments = async (req,res)=>{
+  const { postId } = req.params;
+  const user = req.user._id;
+  const isValid = validation.isValidObjectId(postId);
+  if (!isValid) {
+    res.json({
+      err: "Invalid Id",
+    });
+    return;
+  }
+  const postComments = await Post.findById(postId).populate('comments')
+  res.json({postComments})
+
+}

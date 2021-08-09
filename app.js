@@ -31,10 +31,10 @@ mongoose.connect(MONGODB, {
 
 app.get("/", (req, res) => {
   res.json({
-    success: "Connected",
+    success: "Connected blog-api",
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Listning on ${PORT}`);
+  console.log(`Listening on ${PORT}`);
 });

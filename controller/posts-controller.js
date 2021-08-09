@@ -13,7 +13,7 @@ exports.addPost = async (req, res) => {
     user:userId,
   });
 
-  let post = await post.save();
+  post = await post.save();
   const postId = post._id;
 
   const user = await User.findOneAndUpdate(
@@ -25,24 +25,16 @@ exports.addPost = async (req, res) => {
   });
 };
 
-exports.getUserPost = async (req, res) => {
-  const { name } = req.params;
-  const user = await User.findOne({ userName: name }).populate("post");
-  if (!user) {
-    res.json({
-      err: "User dosent exist",
+exports.getAllPosts = async (req,res)=>{
+  const posts = await Post.find()
+  if (posts.length === 0) {
+    return res.status(400).json({
+      message: "No posts found.",
     });
-    return;
   }
-  if (user.posts.length === 0) {
-    res.json({ msg: "this user has made no posts" });
-    return;
-  }
-  res.json({
-    success: "Success",
-    data: user.post,
-  });
-};
+
+  return res.json({posts});
+}
 
 exports.getSinglePost = async (req, res) => {
   const { postId } = req.params;
@@ -56,7 +48,7 @@ exports.getSinglePost = async (req, res) => {
   }
 
   let post = await Post.findById(postId).populate("user", "userName");
-  post.populate({
+  post = post.populate({
     path: "Comment",
     populate: {
       path: "User",
