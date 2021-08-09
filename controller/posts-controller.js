@@ -1,24 +1,24 @@
 const Comment = require("../models/comment");
-const Posts = require("../models/posts");
+const Post = require("../models/post");
 const User = require("../models/user");
 
-const validation = require("./validation");
+const validation = require("../validators/validation");
 
 exports.addPost = async (req, res) => {
   const { title, description } = req.body;
   const userId = req.user._id;
-  let newPost = new Posts({
+  let post = new Post({
     title,
     description,
-    userId,
+    user:userId,
   });
 
-  let post = await newPost.save();
-  postId = post._id;
+  let post = await post.save();
+  const postId = post._id;
 
   const user = await User.findOneAndUpdate(
     { _id: userId },
-    { $push: { posts: postId } }
+    { $push: { post: postId } }
   );
   res.json({
     success: "Post Added",
@@ -27,7 +27,7 @@ exports.addPost = async (req, res) => {
 
 exports.getUserPost = async (req, res) => {
   const { name } = req.params;
-  const user = await User.findOne({ userName: name }).populate("posts");
+  const user = await User.findOne({ userName: name }).populate("post");
   if (!user) {
     res.json({
       err: "User dosent exist",
@@ -40,7 +40,7 @@ exports.getUserPost = async (req, res) => {
   }
   res.json({
     success: "Success",
-    data: user.posts,
+    data: user.post,
   });
 };
 
@@ -55,15 +55,14 @@ exports.getSinglePost = async (req, res) => {
     return;
   }
 
-  let post = Posts.findById(postId).populate("userid", "userName");
+  let post = await Post.findById(postId).populate("user", "userName");
   post.populate({
-    path: "Comments",
+    path: "Comment",
     populate: {
       path: "User",
       select: "userName",
     },
   });
-  post = await post;
 
   res.json({
     success: "Success",

@@ -5,6 +5,6 @@ const commentController = require("../controller/comment-controller");
 
 const router = express.Router();
 
-router.post("/:postId", auth.isAuth, commentController.addComment);
+router.post("/:postId/comment", auth.isAuth, commentController.addComment);
 
 module.exports = router;

@@ -47,14 +47,14 @@ exports.signUp = async (req, res) => {
     return;
   }
 
-  hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   let newUser = new User({
     userName: name,
     password: hashedPassword,
   });
 
-  await newUser.save((err) => {
+  newUSer = await newUser.save((err) => {
     if (err) {
       res.json({
         err,
