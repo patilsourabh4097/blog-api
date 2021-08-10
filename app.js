@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", authRoute);
 app.use("/post", commentRoute);
-app.use("/post", postsRoute);
+app.use("/post", postRoute);
 app.use("/user", userRoute);
 
 dotEnv.config();
@@ -30,7 +30,7 @@ mongoose.connect(MONGODB, {
 });
 
 app.get("/", (req, res) => {
-  res.json({
+  res.status(200).json({
     success: "Connected blog-api",
   });
 });

@@ -6,7 +6,7 @@ const validation = require("../validators/validation");
 exports.addComment = async (req, res) => {
   const { postId } = req.params;
   const { description } = req.body;
-  const user = req.user._id;
+  const userId = req.user._id;
   const isValid = validation.isValidObjectId(postId);
   if (!isValid) {
     res.status(404).json({
@@ -17,8 +17,8 @@ exports.addComment = async (req, res) => {
 
   let comment = new Comment({
     description,
-    user,
-    post: postId,
+    user:userId,
+    post: postId
   });
 
   comment = await comment.save();
@@ -34,7 +34,6 @@ exports.addComment = async (req, res) => {
 
 exports.getAllComments = async (req, res) => {
   const { postId } = req.params;
-  const user = req.user._id;
   const isValid = validation.isValidObjectId(postId);
   if (!isValid) {
     res.status(404).json({
