@@ -4,13 +4,13 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 exports.login = async (req, res) => {
-  const {name, password} = req.body
+  const { name, password } = req.body;
   const key = process.env.JWT_SECRET;
 
   const user = await User.findOne({ userName: name });
 
   if (!user) {
-    res.json({
+    res.status(404).json({
       err: "User dosent exist",
     });
     return;
@@ -25,23 +25,23 @@ exports.login = async (req, res) => {
 
     const token = await jwt.sign(payLoad, key);
 
-    res.json({
+    res.status(200).json({
       success: "logged in",
-      token
+      token,
     });
   } else {
-    res.json({
+    res.status(404).json({
       err: "Wrong Password",
     });
   }
 };
 
 exports.signUp = async (req, res) => {
-  const {name, password} = req.body
+  const { name, password } = req.body;
 
   const user = await User.findOne({ userName: name });
   if (user) {
-    res.json({
+    res.status(400).json({
       err: "User already exists",
     });
     return;
@@ -56,28 +56,28 @@ exports.signUp = async (req, res) => {
 
   newUSer = await newUser.save((err) => {
     if (err) {
-      res.json({
+      res.status(404).json({
         err,
       });
       return;
     }
   });
 
-  res.json({
+  res.status(200).json({
     success: "successfully signed up",
-    id:newUser._id
+    id: newUser._id,
   });
 };
 
 exports.isAuth = (req, res, next) => {
-  if (!req.headers.auth) {
-    res.json({
+  let token = req.headers.auth;
+  if (!token) {
+    res.status(404).json({
       err: "not logged in",
     });
     return;
   }
 
-  let token = req.headers.auth;
   token = token.split(" ")[1];
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
@@ -91,7 +91,7 @@ exports.isAuth = (req, res, next) => {
     const user = await User.findOne({ userName: decoded.name });
 
     if (!user) {
-      res.json({
+      res.status(404).json({
         err: "Invalid User",
       });
       return;

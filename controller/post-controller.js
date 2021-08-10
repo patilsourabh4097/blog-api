@@ -10,7 +10,7 @@ exports.addPost = async (req, res) => {
   let post = new Post({
     title,
     description,
-    user:userId,
+    user: userId,
   });
 
   post = await post.save();
@@ -20,43 +20,44 @@ exports.addPost = async (req, res) => {
     { _id: userId },
     { $push: { post: postId } }
   );
-  res.json({
+  res.status(200).json({
     success: "Post Added",
   });
 };
 
-exports.getAllPosts = async (req,res)=>{
-  const posts = await Post.find()
+exports.getAllPosts = async (req, res) => {
+  const posts = await Post.find();
   if (posts.length === 0) {
-    return res.status(400).json({
+    return res.status(404).json({
       message: "No posts found.",
     });
   }
 
-  return res.json({posts});
-}
+  return res.status(200).json({ posts });
+};
 
 exports.getSinglePost = async (req, res) => {
   const { postId } = req.params;
 
   const isValid = validation.isValidObjectId(postId);
   if (!isValid) {
-    res.json({
+    res.status(404).json({
       err: "Invalid id",
     });
     return;
   }
 
-  let post = await Post.findById(postId).populate("user", "userName");
-  post = post.populate({
-    path: "Comment",
-    populate: {
-      path: "User",
-      select: "userName",
-    },
-  });
+  const post = await Post.findById(postId)
+    .populate("user", "userName")
+    .populate({
+      path: "Comment",
+      populate: {
+        path: "User",
+        select: "userName",
+      },
+    });
 
-  res.json({
+  res.status(200).json({
     success: "Success",
     data: post,
   });

@@ -10,15 +10,15 @@ exports.getCurrentUser = async (req, res) => {
       id: userId,
     },
   };
-  res.json(user);
+  res.status(200).json(user);
 };
 
 exports.getUser = async (req, res) => {
   const { name } = req.params;
-  const user = await User.findOne({ userName: name });
+  const user = await User.findOne({ userName: name }).populate("post");
 
   if (!user) {
-    res.json({
+    res.status(404).json({
       err: "user dosent exist",
     });
     return;
@@ -28,5 +28,5 @@ exports.getUser = async (req, res) => {
     username: user.userName,
     posts: user.posts,
   };
-  res.json(result);
+  res.status(200).json(result);
 };
